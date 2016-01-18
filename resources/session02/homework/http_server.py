@@ -1,14 +1,17 @@
 import socket
 import sys
+import mimetypes
+import os
+import pathlib
 
 
 def response_ok(body=b"this is a pretty minimal response", mimetype=b"text/plain"):
     """returns a basic HTTP response"""
     resp = []
     resp.append(b"HTTP/1.1 200 OK")
-    resp.append(b"Content-Type: text/plain")
+    resp.append(b" ".join([b"Content-Type: ", mimetype])) #FIX THIS!!!! FIXXED???
     resp.append(b"")
-    resp.append(b"this is a pretty minimal response")
+    resp.append(body)
     return b"\r\n".join(resp)
 
 
@@ -22,7 +25,7 @@ def response_method_not_allowed():
 
 def response_not_found():
     """returns a 404 Not Found response"""
-    return b""
+    return b'HTTP/1.1 404 Not Found\r\n\r\n'
 
 
 def parse_request(request):
@@ -34,8 +37,21 @@ def parse_request(request):
 
 
 def resolve_uri(uri):
+    uri = os.getcwd() + uri
+    mimeType = mimetypes.guess_extension(uri)
+    content = ''
+    if not os.path.exists(uri):
+        print('Not A Valid Path')
+        raise NameError
+    else:
+        print('Valid Path')
+        if os.path.isdir(uri):
+            mimeType = b'text/plain'
+            for i in os.listdir(uri):
+                content += i + ' ' #MIGHT NOT BE RIGHT COMM Z TO GO BACK!!!
+
     """This method should return appropriate content and a mime type"""
-    return b"still broken", b"text/plain"
+    return content.encode('utf8'), mimeType
 
 
 def server(log_buffer=sys.stderr):
