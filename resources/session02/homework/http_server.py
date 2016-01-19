@@ -47,8 +47,6 @@ def resolve_uri(uri):
             mimetype = 'text/plain'
             content = (str(os.listdir(str(fullpath)))).encode()
             print('\n{} is a dir'.format(fullpath))
-            for i in content:
-                print(i)
         elif not fullpath.is_dir():
             content = open(str(fullpath), 'rb').read()
     else:
