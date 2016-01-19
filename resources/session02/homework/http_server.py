@@ -9,7 +9,7 @@ def response_ok(body=b"this is a pretty minimal response", mimetype=b"text/plain
     """returns a basic HTTP response"""
     resp = []
     resp.append(b"HTTP/1.1 200 OK")
-    resp.append(b" ".join([b"Content-Type: ", mimetype])) #FIX THIS!!!! FIXXED???
+    resp.append(b" ".join([b"Content-Type: ", mimetype]))
     resp.append(b"")
     resp.append(body)
     return b"\r\n".join(resp)
@@ -25,7 +25,7 @@ def response_method_not_allowed():
 
 def response_not_found():
     """returns a 404 Not Found response"""
-    return b'HTTP/1.1 404 Not Found\r\n\r\n'
+    return b"HTTP/1.1 404 Not Found\r\n\r\n"
 
 
 def parse_request(request):
@@ -37,21 +37,23 @@ def parse_request(request):
 
 
 def resolve_uri(uri):
-    uri = os.getcwd() + uri
-    mimeType = mimetypes.guess_extension(uri)
-    content = ''
-    if not os.path.exists(uri):
-        print('Not A Valid Path')
-        raise NameError
-    else:
-        print('Valid Path')
-        if os.path.isdir(uri):
-            mimeType = b'text/plain'
+    homedir = os.getcwd()
+    uri = homedir + uri
+    mimetype = mimetypes.guess_type(uri)[0]
+    if os.path.exists(uri):
+        if mimetype is None:
+            mimetype = 'text/plain'
+            content = ''
             for i in os.listdir(uri):
-                content += i + ' ' #MIGHT NOT BE RIGHT COMM Z TO GO BACK!!!
+                content += i + '\n'
+            content.encode()
+        else:
+            content = open(uri, 'rb').read()
+    else:
+        raise NameError
 
     """This method should return appropriate content and a mime type"""
-    return content.encode('utf8'), mimeType
+    return content, mimetype.encode()
 
 
 def server(log_buffer=sys.stderr):
