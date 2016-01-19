@@ -35,25 +35,55 @@ def parse_request(request):
         raise NotImplementedError("We only accept GET")
     return uri
 
-
 def resolve_uri(uri):
-    homedir = os.getcwd()
-    uri = homedir + uri
-    mimetype = mimetypes.guess_type(uri)[0]
-    if os.path.exists(uri):
-        if mimetype is None:
-            mimetype = 'text/plain'
-            content = ''
-            for i in os.listdir(uri):
-                content += i + '\n'
-            content.encode()
-        else:
-            content = open(uri, 'rb').read()
-    else:
-        raise NameError
-
     """This method should return appropriate content and a mime type"""
-    return content, mimetype.encode()
+    homedir = pathlib.Path.cwd()
+    print('\nHomedir: {}\n'.format(homedir))
+    subdirs = [x for x in homedir.glob('**/*')]
+    print('\nSubdirs: {}\n'.format(subdirs))
+    return b"still broken", b'text/plain'
+
+# def resolve_uri(uri):
+#     """This method should return appropriate content and a mime type"""
+#     '''
+# It should map the pathname represented by the URI to a filesystem location.
+# It should have a ‘home directory’, and look only in that location.
+# If the URI is a directory, it should return a plain-text listing of the directory contents and the mimetype text/plain.
+# If the URI is a file, it should return the contents of that file and its correct mimetype.
+# If the URI does not map to a real location, it should raise an exception that the server can catch to return a 404 response.'''
+#     uri = pathlib.Path(uri)
+#     homedir = pathlib.Path.cwd().joinpath('webroot')
+#     fullpath = homedir.joinpath(uri)
+#     if not fullpath.exists():
+#         raise NameError
+#     elif fullpath.is_dir():
+#         mimetype = 'text/plain'
+#         content = list(fullpath.glob('**'))
+#     else:
+#         mimetype = mimetypes.guess_type(uri)[0]
+#         content = open(fullpath, 'rb')
+#     #print(fullpath)
+#     print(homedir.joinpath(uri))
+#     #print(uri)
+#     return content, mimetype.encode()
+
+# def resolve_uri(uri):
+#     mimetype = mimetypes.guess_type(uri)[0]
+#     homedir = os.getcwd() + '/webroot'
+#     for i in os.listdir(homedir):
+#         print(i)
+#     uri = homedir + uri
+#     print(uri,'\n','#'*25)
+#     content = ''
+#     if not os.path.exists(uri):
+#         raise NameError
+#     if mimetype is None:
+#         mimetype = 'text/plain'
+#         for i in os.listdir(uri):
+#             content += i + ' '
+#         #content.encode('utf8')
+#     """This method should return appropriate content and a mime type"""
+    return content.encode('utf8'), mimetype.encode('utf8')
 
 
 def server(log_buffer=sys.stderr):
