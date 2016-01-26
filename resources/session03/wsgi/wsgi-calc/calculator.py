@@ -1,27 +1,40 @@
+#!/usr/bin/env python3
+
 import re
 
 
 def addition(num_str):
-    num_list = num_str.replace('/', ' ').split(' ')
-    all_add = sum(map(int, num_list))
-    return "<h1>Addition %s </h1>" % all_add
+    if num_str.endswith('/'):
+        num_str = num_str.rstrip('/')
+    num_str = num_str.replace('/', '+')
+    after_math = eval(num_str)
+    return "<h1>Addition %s = %s </h1>" % (num_str, after_math)
 
 
 def subtraction(num_str):
-    num_list = num_str.replace('/', ' ').split(' ')
-    for n in num_list:
-
-    return "<h1>Subtraction</h1>"
+    if num_str.endswith('/'):
+        num_str = num_str.rstrip('/')
+    num_str = num_str.replace('/', '-')
+    after_math = eval(num_str)
+    return "<h1>Subtraction %s = %s </h1>" % (num_str, after_math)
 
 
 def multiplication(num_str):
-    num_list = num_str.replace('/', ' ').split(' ')
-    return "<h1>Multiplication</h1>"
+    if num_str.endswith('/'):
+        num_str = num_str.rstrip('/')
+    num_str = num_str.replace('/', '*')
+    after_math = eval(num_str)
+    return "<h1>Multiplication %s = %s </h1>" % (num_str, after_math)
 
 
 def division(num_str):
-    num_list = num_str.replace('/', ' ').split(' ')
-    return "<h1>Division %s </h1>" %
+    if num_str.endswith('/'):
+        num_str = num_str.rstrip('/')
+    try:
+        after_math = eval(num_str)
+        return "<h1>Division %s = %s </h1>" % (num_str, after_math)
+    except ZeroDivisionError:
+        return '<h1>Zero Division Error</h1>'
 
 
 def main_page():
@@ -49,11 +62,6 @@ def application(environ, start_response):
         return [body.encode('utf8')]
 
 
-def math_list(math_path):
-    num_list = math_path.replace('/', ' ').split(' ')
-    return num_list
-
-
 def resolve_path(path):
     urls = [(r'^$', main_page),
             (r'^add/([0-9/]+)$', addition),
@@ -68,7 +76,6 @@ def resolve_path(path):
         if match is None:
             continue
         args = match.groups([])
-        #args = math_list(args[0])
         return func, args
     # we get here if no url matches
     raise NameError
@@ -78,7 +85,3 @@ if __name__ == '__main__':
     from wsgiref.simple_server import make_server
     srv = make_server('localhost', 8080, application)
     srv.serve_forever()
-
-#math_list('91/0')
-
-#resolve_path('add/1/1/97/0/2')
