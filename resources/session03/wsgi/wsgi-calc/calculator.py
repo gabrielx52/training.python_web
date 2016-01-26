@@ -38,7 +38,14 @@ def division(num_str):
 
 
 def main_page():
-    return "<h1>Math things happen</h1>"
+    return "<h1>Math things happen</h1>" \
+           "<p>To make math: enter required operation<br>" \
+           "'add', 'subtract', 'multiply' or 'divide<br>" \
+           "in address bar followed by slash '/'<br>" \
+           "followed by numbers you wish to math<br>" \
+           "separated by slashes '/'<br>" \
+           "hit enter to math.</p>"
+
 
 
 def application(environ, start_response):
@@ -65,12 +72,11 @@ def application(environ, start_response):
 def resolve_path(path):
     urls = [(r'^$', main_page),
             (r'^add/([0-9/]+)$', addition),
-            (r'^subtraction/([0-9/]+)$', subtraction),
-            (r'^multiplication/([0-9/]+)$', multiplication),
-            (r'^division/([0-9/]+)$', division)
+            (r'^subtract/([0-9/]+)$', subtraction),
+            (r'^multiply/([0-9/]+)$', multiplication),
+            (r'^divide/([0-9/]+)$', division)
             ]
     math_path = path.lstrip('/')
-    print('math path: ',math_path)
     for regexp, func in urls:
         match = re.match(regexp, math_path)
         if match is None:
