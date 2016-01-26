@@ -6,11 +6,13 @@ def addition(h):
     for i in h:
         if i != '/':
             H.append(i)
-     sum(H)
-    return "<h1>Addition %s </h1>" % h
+     #sum(H)
+    all_add = sum(map(int, H))
+    return "<h1>Addition %s </h1>" % all_add
 
 
-def subtraction():
+def subtraction(h):
+    H = []
     return "<h1>Subtraction</h1>"
 
 
@@ -47,19 +49,35 @@ def application(environ, start_response):
         return [body.encode('utf8')]
 
 
-#def num_slash(n):
+# def num_slash_checker(math_path):
+#     num_slash = set('0123456789/')
+#     if any((c in num_slash) for c in math_path):
+#         print('Found')
+#     else:
+#         print('Not Found')
+
+
+def math_list(math_path):
+    num_list = math_path.replace('/', ' ').split(' ')
+    #hh = H.split(' ')
+    #for i in math_path:
+    #    if i != '/':
+    #        H.append(i)
+     #sum(H)
+    #all_add = sum(map(int, H))
+    print(num_list)
 
 
 def resolve_path(path):
     urls = [(r'^$', main_page),
-            (r'^add/([\S]+)$', addition),
-            (r'^subtraction/([\d]+)$', subtraction),
-            (r'^multiplication/([\d]+)$', multiplication),
-            (r'^division/([\d]+)$', division)
+            (r'^add/([0-9/]+)$', addition),
+            (r'^subtraction/([0-9/]+)$', subtraction),
+            (r'^multiplication/([0-9/]+)$', multiplication),
+            (r'^division/([0-9/]+)$', division)
             ]
-    matchpath = path.lstrip('/')
+    math_path = path.lstrip('/')
     for regexp, func in urls:
-        match = re.match(regexp, matchpath)
+        match = re.match(regexp, math_path)
         if match is None:
             continue
         args = match.groups([])
@@ -68,7 +86,9 @@ def resolve_path(path):
     raise NameError
 
 
-if __name__ == '__main__':
-    from wsgiref.simple_server import make_server
-    srv = make_server('localhost', 8080, application)
-    srv.serve_forever()
+# if __name__ == '__main__':
+#     from wsgiref.simple_server import make_server
+#     srv = make_server('localhost', 8080, application)
+#     srv.serve_forever()
+
+math_list('91/0')
