@@ -1,27 +1,27 @@
 import re
 
 
-def addition(h):
-    H = []
-    for i in h:
-        if i != '/':
-            H.append(i)
-     #sum(H)
-    all_add = sum(map(int, H))
+def addition(num_str):
+    num_list = num_str.replace('/', ' ').split(' ')
+    all_add = sum(map(int, num_list))
     return "<h1>Addition %s </h1>" % all_add
 
 
-def subtraction(h):
-    H = []
+def subtraction(num_str):
+    num_list = num_str.replace('/', ' ').split(' ')
+    for n in num_list:
+
     return "<h1>Subtraction</h1>"
 
 
-def multiplication():
+def multiplication(num_str):
+    num_list = num_str.replace('/', ' ').split(' ')
     return "<h1>Multiplication</h1>"
 
 
-def division():
-    return "<h1>Division</h1>"
+def division(num_str):
+    num_list = num_str.replace('/', ' ').split(' ')
+    return "<h1>Division %s </h1>" %
 
 
 def main_page():
@@ -49,23 +49,9 @@ def application(environ, start_response):
         return [body.encode('utf8')]
 
 
-# def num_slash_checker(math_path):
-#     num_slash = set('0123456789/')
-#     if any((c in num_slash) for c in math_path):
-#         print('Found')
-#     else:
-#         print('Not Found')
-
-
 def math_list(math_path):
     num_list = math_path.replace('/', ' ').split(' ')
-    #hh = H.split(' ')
-    #for i in math_path:
-    #    if i != '/':
-    #        H.append(i)
-     #sum(H)
-    #all_add = sum(map(int, H))
-    print(num_list)
+    return num_list
 
 
 def resolve_path(path):
@@ -76,19 +62,23 @@ def resolve_path(path):
             (r'^division/([0-9/]+)$', division)
             ]
     math_path = path.lstrip('/')
+    print('math path: ',math_path)
     for regexp, func in urls:
         match = re.match(regexp, math_path)
         if match is None:
             continue
         args = match.groups([])
+        #args = math_list(args[0])
         return func, args
     # we get here if no url matches
     raise NameError
 
 
-# if __name__ == '__main__':
-#     from wsgiref.simple_server import make_server
-#     srv = make_server('localhost', 8080, application)
-#     srv.serve_forever()
+if __name__ == '__main__':
+    from wsgiref.simple_server import make_server
+    srv = make_server('localhost', 8080, application)
+    srv.serve_forever()
 
-math_list('91/0')
+#math_list('91/0')
+
+#resolve_path('add/1/1/97/0/2')
