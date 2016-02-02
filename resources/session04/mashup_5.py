@@ -131,20 +131,25 @@ def get_score_data(elem):
 #         metadata = extract_restaurant_metadata(data_div)
 #         inspection_data = get_score_data(data_div)
 #         metadata.update(inspection_data)
+#         print('metadat: ', metadata, '\n', 'type: ', type(metadata), '\n')
+#         for i in metadata:
+#             print(i, '\n')
 #         yield metadata
 
 
-def result_generator(sorted_list):
-    metadata = dict(sorted_list)
-    data_list = restaurant_data_generator(content_col)
-    for data_div in data_list[:count]:
-        metadata = extract_restaurant_metadata(data_div)
-        inspection_data = get_score_data(data_div)
-        metadata.update(inspection_data)
-        yield metadata
+def result_generator(sorted_list, count):
+    print(sorted_list)
+    for list in sorted_list[:count]:
+        yield list
+    # data_list = restaurant_data_generator(content_col)
+    # for data_div in data_list[:count]:
+    #     metadata = extract_restaurant_metadata(data_div)
+    #     inspection_data = get_score_data(data_div)
+    #     metadata.update(inspection_data)
+    #     yield metadata
 
 
-def result_display(*sort_method):
+def result_display(*args):
     sort_dict = {'highscore': 'High Score',
                  'average': 'Average Score',
                  'total': 'Total Inspections'}
@@ -159,16 +164,14 @@ def result_display(*sort_method):
         metadata.update(inspection_data)
         dict_list.append(metadata)
     for key in sort_dict:
-        if key in sort_method:
+        if key in args:
             dict_list = sorted(dict_list, key=lambda k: k[sort_dict[key]], reverse=True)
         else:
             dict_list = dict_list
-    if 'reverse' in sort_method:
+    if 'reverse' in args:
         dict_list.reverse()
-    if 'map' in sort_method:
-        yield dict(dict_list)
-    elif 'display' in sort_method:
-        return dict_list
+    return dict_list
+
 
 
 
@@ -199,11 +202,13 @@ if __name__ == '__main__':
         if arg.isdigit():
             count = int(arg)
         if arg == 'display':
+            print('result_type: ', result_display(*sys.argv)[:count], '\n', type(result_display(*sys.argv)[:count]))
             for rest in result_display(*sys.argv)[:count]:
-                print('\n', rest)
+                print('\n', rest, type(rest))
         if arg == 'map':
             total_result = {'type': 'FeatureCollection', 'features': []}
-            for result in result_display(count):
+            for result in result_generator((result_display(*sys.argv)),count):
+                print('Result type: ', type(result), '\n')
                 geojson = get_geojson(result)
                 total_result['features'].append(geojson)
                 print('*')
