@@ -5,11 +5,7 @@ import pathlib
 import re
 import requests
 import sys
-import argparse
 
-#parser = argparse.ArgumentParser(description= 'Sort and specify search results')
-#parser.add_argument('--integer',help='How many search results', type=int)
-#args = parser.parse_args()
 
 INSPECTION_DOMAIN = 'http://info.kingcounty.gov'
 INSPECTION_PATH = '/health/ehs/foodsafety/inspections/Results.aspx'
@@ -111,7 +107,6 @@ def get_score_data(elem):
         else:
             total += intval
             high_score = intval if intval > high_score else high_score
-
     if samples:
         average = total/float(samples)
     data = {
@@ -122,31 +117,10 @@ def get_score_data(elem):
     return data
 
 
-# def result_generator(count):
-#     html = load_inspection_page('inspection_page.html')
-#     parsed = parse_source(html)
-#     content_col = parsed.find("td", id="contentcol")
-#     data_list = restaurant_data_generator(content_col)
-#     for data_div in data_list[:count]:
-#         metadata = extract_restaurant_metadata(data_div)
-#         inspection_data = get_score_data(data_div)
-#         metadata.update(inspection_data)
-#         print('metadat: ', metadata, '\n', 'type: ', type(metadata), '\n')
-#         for i in metadata:
-#             print(i, '\n')
-#         yield metadata
-
-
 def result_generator(sorted_list, count):
-    print(sorted_list)
-    for list in sorted_list[:count]:
-        yield list
-    # data_list = restaurant_data_generator(content_col)
-    # for data_div in data_list[:count]:
-    #     metadata = extract_restaurant_metadata(data_div)
-    #     inspection_data = get_score_data(data_div)
-    #     metadata.update(inspection_data)
-    #     yield metadata
+    for rest_data in sorted_list[:count]:
+        yield rest_data
+
 
 
 def result_display(*args):
@@ -202,15 +176,13 @@ if __name__ == '__main__':
         if arg.isdigit():
             count = int(arg)
         if arg == 'display':
-            print('result_type: ', result_display(*sys.argv)[:count], '\n', type(result_display(*sys.argv)[:count]))
             for rest in result_display(*sys.argv)[:count]:
                 print('\n', rest, type(rest))
         if arg == 'map':
             total_result = {'type': 'FeatureCollection', 'features': []}
             for result in result_generator((result_display(*sys.argv)),count):
-                print('Result type: ', type(result), '\n')
                 geojson = get_geojson(result)
                 total_result['features'].append(geojson)
-                print('*')
+            print('Map created')
             with open('my_map.json', 'w') as fh:
                 json.dump(total_result, fh)
