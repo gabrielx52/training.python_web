@@ -122,16 +122,20 @@ def get_score_data(elem):
     return data
 
 
-def result_generator(count):
-    use_params = {
-        'Inspection_Start': '2/1/2013',
-        'Inspection_End': '2/1/2015',
-        'Zip_Code': '98101'
-    }
-    # html = get_inspection_page(**use_params)
-    html = load_inspection_page('inspection_page.html')
-    parsed = parse_source(html)
-    content_col = parsed.find("td", id="contentcol")
+# def result_generator(count):
+#     html = load_inspection_page('inspection_page.html')
+#     parsed = parse_source(html)
+#     content_col = parsed.find("td", id="contentcol")
+#     data_list = restaurant_data_generator(content_col)
+#     for data_div in data_list[:count]:
+#         metadata = extract_restaurant_metadata(data_div)
+#         inspection_data = get_score_data(data_div)
+#         metadata.update(inspection_data)
+#         yield metadata
+
+
+def result_generator(sorted_list):
+    metadata = dict(sorted_list)
     data_list = restaurant_data_generator(content_col)
     for data_div in data_list[:count]:
         metadata = extract_restaurant_metadata(data_div)
@@ -140,7 +144,7 @@ def result_generator(count):
         yield metadata
 
 
-def result_display_sort(count, *sort_method):
+def result_display(*sort_method):
     sort_dict = {'highscore': 'High Score',
                  'average': 'Average Score',
                  'total': 'Total Inspections'}
@@ -159,16 +163,13 @@ def result_display_sort(count, *sort_method):
             dict_list = sorted(dict_list, key=lambda k: k[sort_dict[key]], reverse=True)
         else:
             dict_list = dict_list
-    # if 'highscore' in sort_method:
-    #     dict_list = sorted(dict_list, key=lambda k: k['High Score'], reverse=True)
-    # elif 'average' in sort_method:
-    #     dict_list = sorted(dict_list, key=lambda k: k['Average Score'], reverse=True)
-    # elif 'total' in sort_method:
-    #     dict_list = sorted(dict_list, key=lambda k: k['Total Inspections'], reverse=True)
-    # else:
-    #    dict_list = dict_list
-    for rest in dict_list[:count]:
-        print('\n', rest)
+    if 'reverse' in sort_method:
+        dict_list.reverse()
+    if 'map' in sort_method:
+        yield dict(dict_list)
+    elif 'display' in sort_method:
+        return dict_list
+
 
 
 def get_geojson(result):
@@ -198,14 +199,13 @@ if __name__ == '__main__':
         if arg.isdigit():
             count = int(arg)
         if arg == 'display':
-            result_display_sort(count, *sys.argv)
+            for rest in result_display(*sys.argv)[:count]:
+                print('\n', rest)
         if arg == 'map':
             total_result = {'type': 'FeatureCollection', 'features': []}
-            for result in result_generator(count):
+            for result in result_display(count):
                 geojson = get_geojson(result)
                 total_result['features'].append(geojson)
                 print('*')
             with open('my_map.json', 'w') as fh:
                 json.dump(total_result, fh)
-
-    #print(count)
